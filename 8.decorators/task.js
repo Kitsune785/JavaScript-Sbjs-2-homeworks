@@ -20,13 +20,30 @@ function cachingDecoratorNew(func) {
 }
 
 function debounceDecoratorNew(func, ms) {
-  let timer = null;  
+  let timer = null;
+  wrapper.count = 0;
+  wrapper.allCount = 0;
+
     function wrapper(...args) {
+
       if (timer === null) {
         func(...args);
+        wrapper.count += 1;
+        timer = setTimeout(() => {
+          func(...args);
+          wrapper.count += 1;
+        }, delay);
+      } else {
+        if (timer) {
+          clearTimeout(timer);
+        }
+
+        timer = setTimeout(() => {
+          func(...args);
+          wrapper.count += 1;
+        }, delay);
       }
-      clearTimeout(timer);
-      timer = setTimeout(() => func(...args), ms);
+      wrapper.allCount += 1;  
     }
-    return wrapper;
-}
+    return wrapper; 
+    }
